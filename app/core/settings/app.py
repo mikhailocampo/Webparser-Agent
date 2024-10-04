@@ -1,9 +1,11 @@
 import logging
 import os
+import sys
 from typing import Any, Dict, List, Tuple
+from loguru import logger
 
 from app.core.settings.base import BaseAppSettings
-from app.core.logging import setup_logging
+from app.core.logging import InterceptHandler
 
 
 class AppSettings(BaseAppSettings):
@@ -48,4 +50,8 @@ class AppSettings(BaseAppSettings):
         }
 
     def configure_logging(self) -> None:
-        setup_logging(self.logging_level, self.loggers)
+        logging.getLogger().handlers = [InterceptHandler()]
+        for logger_name in self.loggers:
+            logging_logger = logging.getLogger(logger_name)
+            logging_logger.handlers = [InterceptHandler(level=self.logging_level)]
+        logger.configure(handlers=[{"sink": sys.stderr, "level": self.logging_level}])
