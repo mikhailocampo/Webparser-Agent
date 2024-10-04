@@ -1,5 +1,4 @@
 from app.core.settings.app import AppSettings
-import os
 import logging
 
 
